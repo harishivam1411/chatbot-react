@@ -1,6 +1,5 @@
 import dayjs from "dayjs";
 import { useState } from "react";
-import { Chatbot } from "supersimpledev";
 import LoadingSpinnerGif from "../assets/loading-spinner.gif";
 import "./ChatInput.css";
 
@@ -39,18 +38,45 @@ export function ChatInput({ chatMessages, setChatMessages }) {
       },
     ]);
 
-    const response = await Chatbot.getResponseAsync(inputText);
-    setChatMessages([
-      ...newChatMessages,
-      {
-        message: response,
-        sender: "robot",
-        id: crypto.randomUUID(),
-        time: dayjs().valueOf(),
-      },
-    ]);
+    try {
+      const response = await fetch("http://localhost:8000/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_message: inputText }),
+      });
 
-    setIsLoading(false);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      console.log("Chatbot response:", data);
+
+      setChatMessages([
+        ...newChatMessages,
+        {
+          message: data.bot_response,
+          sender: "robot",
+          id: crypto.randomUUID(),
+          time: dayjs().valueOf(),
+        },
+      ]);
+    } catch (error) {
+      console.error("Error fetching chat response:", error);
+      const errorMessage = "Sorry, something went wrong. Please try again.";
+      setChatMessages([
+        ...newChatMessages,
+        {
+          message: errorMessage,
+          sender: "robot",
+          id: crypto.randomUUID(),
+          time: dayjs().valueOf(),
+        },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   function clearMessages() {
