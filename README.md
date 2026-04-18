@@ -7,10 +7,11 @@ A simple chatbot application built with React.
 The chatbot responds to the following commands:
 
 - hello
-- hello chatbot
+- goodbye
 - flip a coin
 - get today's date
 - roll a dice
+- give me a unique id
 
 ## Installation
 
