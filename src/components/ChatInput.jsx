@@ -51,8 +51,6 @@ export function ChatInput({ chatMessages, setChatMessages }) {
 
       const data = await response.json();
 
-      console.log("Chatbot response:", data);
-
       setChatMessages([
         ...newChatMessages,
         {
